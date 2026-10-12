@@ -33,7 +33,7 @@
    source .venv/bin/activate
    ```
 
-3. Install what the program needs (the HiGHS solver, the test runner and the program itself):
+3. Install the requirements:
 
    ```bash
    pip install -r requirements.txt
