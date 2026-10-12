@@ -1,0 +1,6 @@
+{
+  "flightId": "invalid_missing_weight_limit",
+  "shipments": [
+    { "id": "S1", "customer": "Atlas Steel", "weightKg": 300, "revenueUsd": 3000 }
+  ]
+}

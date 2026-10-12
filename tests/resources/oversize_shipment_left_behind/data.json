@@ -1,0 +1,9 @@
+{
+  "flightId": "oversize_shipment_left_behind",
+  "maxWeightKg": 500,
+  "shipments": [
+    { "id": "S1", "customer": "Atlas Steel",  "weightKg": 300, "revenueUsd": 3000 },
+    { "id": "S2", "customer": "Bighorn Auto", "weightKg": 900, "revenueUsd": 9000 },
+    { "id": "S3", "customer": "Cedar Pharma", "weightKg": 300, "revenueUsd": 800 }
+  ]
+}

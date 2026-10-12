@@ -1,0 +1,15 @@
+{
+  "flightId": "SC101",
+  "maxWeightKg": 1000,
+  "shipments": [
+    { "id": "S1", "customer": "Atlas Steel",      "weightKg": 300, "revenueUsd": 3000 },
+    { "id": "S2", "customer": "Atlas Steel",      "weightKg": 250, "revenueUsd": 2400 },
+    { "id": "S3", "customer": "Atlas Steel",      "weightKg": 200, "revenueUsd": 1900 },
+    { "id": "S4", "customer": "Bighorn Auto",     "weightKg": 250, "revenueUsd": 2300 },
+    { "id": "S5", "customer": "Bighorn Auto",     "weightKg": 150, "revenueUsd": 1300 },
+    { "id": "S6", "customer": "Cedar Pharma",     "weightKg": 100, "revenueUsd": 800 },
+    { "id": "S7", "customer": "Dune Electronics", "weightKg": 150, "revenueUsd": 1100 },
+    { "id": "S8", "customer": "Elk Outfitters",   "weightKg": 100, "revenueUsd": 700 },
+    { "id": "S9", "customer": "Fremont Farms",    "weightKg": 200, "revenueUsd": 1200 }
+  ]
+}

@@ -1,0 +1,3 @@
+{ "flightId": "invalid_not_json",
+  "maxWeightKg": 500,
+  "shipments": [

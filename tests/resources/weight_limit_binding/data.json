@@ -1,0 +1,9 @@
+{
+  "flightId": "weight_limit_binding",
+  "maxWeightKg": 600,
+  "shipments": [
+    { "id": "S1", "customer": "Atlas Steel",  "weightKg": 300, "revenueUsd": 3000 },
+    { "id": "S2", "customer": "Bighorn Auto", "weightKg": 300, "revenueUsd": 2900 },
+    { "id": "S3", "customer": "Cedar Pharma", "weightKg": 300, "revenueUsd": 2800 }
+  ]
+}

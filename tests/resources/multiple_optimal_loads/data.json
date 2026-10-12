@@ -1,0 +1,8 @@
+{
+  "flightId": "multiple_optimal_loads",
+  "maxWeightKg": 200,
+  "shipments": [
+    { "id": "S1", "customer": "Atlas Steel",  "weightKg": 200, "revenueUsd": 1000 },
+    { "id": "S2", "customer": "Bighorn Auto", "weightKg": 200, "revenueUsd": 1000 }
+  ]
+}

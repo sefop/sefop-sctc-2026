@@ -1,0 +1,9 @@
+{
+  "flightId": "SC001",
+  "maxWeightKg": 500,
+  "shipments": [
+    { "id": "S1", "customer": "Atlas Steel",  "weightKg": 500, "revenueUsd": 3000 },
+    { "id": "S2", "customer": "Bighorn Auto", "weightKg": 250, "revenueUsd": 2000 },
+    { "id": "S3", "customer": "Cedar Pharma", "weightKg": 250, "revenueUsd": 1800 }
+  ]
+}
