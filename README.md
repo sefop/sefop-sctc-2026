@@ -124,29 +124,109 @@ behind a web application.
 
 ## Mathematical model
 
-The decision is a 0/1 knapsack problem.
+This problem can be formulated as a classical 0/1 knapsack problem. Given a flight, the program
+returns the set of shipments that maximizes revenue without exceeding the aircraft's weight limit.
 
-```text
-Sets and parameters
-    i            a shipment waiting for the flight
-    revenue_i    revenue earned if shipment i flies (USD)
-    weight_i     weight of shipment i (kg)
-    W            weight limit of the aircraft (kg)
+### Sets
 
-Decision variable
-    x_i = 1 if shipment i flies, 0 if it is left behind
+- $I$: the shipments waiting for the flight. The index $i$ runs over it.
 
-Objective
-    maximize    sum over i of  revenue_i * x_i
+### Parameters
 
-Constraint
-    sum over i of  weight_i * x_i  <=  W
-```
+Assume all these are deterministic.
 
-- The weight limit is the only constraint, and it is hard.
+For each shipment $i \in I$:
+
+- $r_i > 0$: the revenue earned if the shipment flies, in USD.
+- $w_i > 0$: the weight of the shipment, in kg.
+
+For the aircraft:
+
+- $W > 0$: the maximum weight the aircraft may carry, in kg.
+
+### Variables
+
+- $x_i \in \lbrace 0, 1 \rbrace$: 1 if shipment $i$ flies, 0 if it is left behind, for each $i \in I$.
+
+### Objective function
+
+Maximize revenue:
+
+$$
+\max_{x} \quad \sum_{i \in I} r_i x_i
+$$
+
+### Constraints
+
+**(C1) Weight limit.** The loaded shipments weigh no more than the aircraft may carry.
+
+$$
+\sum_{i \in I} w_i x_i \le W
+$$
+
+**(C2) Whole shipments.** A shipment flies whole or not at all.
+
+$$
+x_i \in \lbrace 0, 1 \rbrace \qquad \forall i \in I
+$$
+
+Put together, the complete model reads:
+
+$$
+\begin{aligned}
+\max_{x} \quad & \sum_{i \in I} r_i x_i \
+\text{s.t.} \quad & \sum_{i \in I} w_i x_i \le W & \text{(C1) weight limit} \
+& x_i \in \lbrace 0, 1 \rbrace \quad \forall i \in I & \text{(C2) whole shipments}
+\end{aligned}
+$$
+
+Note the feasible region is never empty: loading nothing, $x_i = 0$ for every $i \in I$, always
+respects (C1).
+
 - The customer of each shipment is in the data and in the output, but not in the model.
-- When several loads earn the same highest revenue, the program returns any one of them.
+- When several loads earn the same maximum revenue, the program returns any one of them.
 - The model is a simplification of the planner's decision, not a copy of it.
+
+### Notation
+
+| Symbol | Type      | Meaning                               | Unit | Domain                           |
+| :----: | --------- | ------------------------------------- | ---- | -------------------------------- |
+|  $I$   | set       | shipments waiting for the flight      | —    | finite set                       |
+|  $i$   | index     | one shipment                          | —    | $i \in I$                        |
+| $r_i$  | parameter | revenue earned if shipment $i$ flies  | USD  | $r_i > 0$                        |
+| $w_i$  | parameter | weight of shipment $i$                | kg   | $w_i > 0$                        |
+|  $W$   | parameter | maximum weight the aircraft may carry | kg   | $W > 0$                          |
+| $x_i$  | variable  | whether shipment $i$ flies            | —    | $x_i \in \lbrace 0, 1 \rbrace$   |
+
+### An example instance
+
+Flight `SC001`, in `data/SC001/data.json`:
+
+| Shipment         | Weight $w_i$ | Revenue $r_i$ |
+| ---------------- | :----------: | :-----------: |
+| S1: Atlas Steel  |     500      |     3000      |
+| S2: Bighorn Auto |     250      |     2000      |
+| S3: Cedar Pharma |     250      |     1800      |
+
+with $W = 500$ kg:
+
+$$
+\begin{aligned}
+\max_{x} \quad & 3000 x_1 + 2000 x_2 + 1800 x_3 \
+\text{s.t.} \quad & 500 x_1 + 250 x_2 + 250 x_3 \le 500 \
+& x_1, x_2, x_3 \in \lbrace 0, 1 \rbrace
+\end{aligned}
+$$
+
+S1 is the most valuable shipment, but it fills the aircraft alone and earns 3,000 USD. S2 and S3
+fit together and earn 3,800 USD. The optimal solution is $x_1 = 0$, $x_2 = 1$, $x_3 = 1$:
+
+| Value       | Computed as                                  |     Result      |
+| ----------- | -------------------------------------------- | :-------------: |
+| Revenue     | $3000 \cdot 0 + 2000 \cdot 1 + 1800 \cdot 1$ |    3,800 USD    |
+| Weight used | $500 \cdot 0 + 250 \cdot 1 + 250 \cdot 1$    | 500 of 500 kg   |
+
+`python -m cli optimize_cargo SC001` reproduces it.
 
 ## Repository structure
 
