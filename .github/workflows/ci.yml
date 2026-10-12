@@ -1,0 +1,61 @@
+# =============================================================================
+# GitHub Actions Workflow: Continuous Integration
+# =============================================================================
+# This file tells GitHub to check the code automatically on every push and
+# pull request to main: is it formatted, do the type hints agree, and do the
+# tests pass?
+#
+# It runs on the oldest and the newest Python this project supports, so a
+# visitor arriving with either one finds a program that works.
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# If a new commit is pushed while a previous run is still in progress, cancel
+# the older run instead of letting both finish.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    strategy:
+      # Let both Python versions finish even if one fails, so a failure shows
+      # whether it is specific to one version.
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.13"]
+
+    steps:
+      # Step 1: Fetch the code. The runner starts empty.
+      - uses: actions/checkout@v4
+
+      # Step 2: Install the Python version under test.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Step 3: Install the program, the test runner, black and mypy.
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      # Step 4: Format check. `--check` verifies without rewriting files.
+      # If this fails, run `black src tests` locally and push the result.
+      - name: Run black (format check)
+        run: black --check src tests
+
+      # Step 5: Static type check, configured in pyproject.toml.
+      - name: Run mypy (static type check)
+        run: mypy
+
+      # Step 6: Unit tests and end-to-end tests.
+      - name: Run tests
+        run: pytest

@@ -1,0 +1,10 @@
+# Extra tools for people changing the code (not needed just to run it):
+#   pip install -r requirements-dev.txt
+
+-r requirements.txt
+
+# Code formatter: `black src tests`
+black>=24
+
+# Static type checker: `mypy`
+mypy>=1.10

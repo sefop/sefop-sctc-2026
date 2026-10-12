@@ -1,0 +1,102 @@
+# =============================================================================
+# pyproject.toml — Python project configuration for the SCTC 2026 cargo workshop
+# =============================================================================
+# This file tells Python how to build, test, and run this project.
+#
+# Key concepts:
+# - [build-system]: How to package this project
+# - [project]: Metadata (name, version, supported Python)
+# - [tool.*]: Configuration for specific tools (setuptools, pytest, black, mypy)
+#
+# The libraries this project needs are listed in requirements.txt (to run the
+# program and its tests) and requirements-dev.txt (to also format and type-check).
+# =============================================================================
+
+[build-system]
+requires = ["setuptools>=68"]
+# setuptools: the standard Python packaging tool, bundled with pip.
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sefop-sctc-2026"
+version = "1.0.0"
+# Semantic versioning: MAJOR.MINOR.PATCH
+# - MAJOR: breaking changes (old commands or data files stop working)
+# - MINOR: new features (backwards compatible)
+# - PATCH: bug fixes (no new features)
+
+requires-python = ">=3.10"
+# Any recent Python works. Nothing here depends on one exact version.
+
+# =============================================================================
+# [tool.setuptools] — Where the source code lives
+# =============================================================================
+[tool.setuptools]
+package-dir = {"" = "src"}
+# "Where is the root package?" In the src/ folder, not at the project root.
+# This is why the code says `from domain.shipment import Shipment` instead of
+# `from src.domain.shipment import Shipment`.
+
+py-modules = ["cli", "startup"]
+# cli.py and startup.py are single files directly under src/, not folders, so
+# they are listed by name. `python -m cli ...` works once `pip install -e .`
+# has run (requirements.txt does that for you).
+
+[tool.setuptools.packages.find]
+where = ["src"]
+# "Look in src/ and find every package." A package is any folder with an
+# __init__.py file: domain/, use_cases/, adapters/ and their subfolders.
+
+# =============================================================================
+# [tool.pytest.ini_options] — Configuration for the pytest test runner
+# =============================================================================
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+pythonpath = ["src", "."]
+# Lets the tests import the code (`from domain.shipment import Shipment`) even
+# before `pip install -e .` has run.
+
+markers = [
+    "integration: tests that run the real command line end to end (deselect with '-m \"not integration\"')",
+]
+# A marker is a label added to a test with @pytest.mark.integration.
+#   pytest                          # run all tests
+#   pytest -m integration           # run only the end-to-end tests
+#   pytest -m "not integration"     # run only the unit tests
+
+# =============================================================================
+# [tool.black] — Configuration for the black code formatter
+# =============================================================================
+# Run: `black src tests` to format the code, `black --check src tests` to verify.
+[tool.black]
+line-length = 120
+target-version = ["py310"]
+
+# =============================================================================
+# [tool.mypy] — Configuration for the mypy static type checker
+# =============================================================================
+# Every function in src/ is annotated with type hints. Mypy reads them and
+# verifies they are consistent, e.g. that a function annotated to return a
+# `Load` never actually returns `None`. Run: `mypy`.
+[tool.mypy]
+python_version = "3.10"
+
+mypy_path = "src"
+# Same role as pytest's pythonpath above: treat src/ as the import root.
+
+files = ["src"]
+# Only the program is type-checked, not tests/.
+
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+# Every function must have a complete set of type hints.
+
+warn_return_any = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = "highspy.*"
+ignore_missing_imports = true
+# highspy (the HiGHS solver's Python bindings) is a compiled extension that
+# ships no type information, so mypy cannot see its types.

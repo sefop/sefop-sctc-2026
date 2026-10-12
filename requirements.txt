@@ -1,0 +1,12 @@
+# Everything needed to run the program and its tests:
+#   pip install -r requirements.txt
+
+# HiGHS, the optimization solver that chooses which shipments fly.
+highspy>=1.7,<2
+
+# The test runner.
+pytest>=8
+
+# This project itself, installed in "editable" mode so `python -m cli ...` can
+# find the code under src/ and picks up any change you make to it.
+-e .
