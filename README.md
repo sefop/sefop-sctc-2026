@@ -5,18 +5,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue)](https://www.python.org/)
-[![CI](https://github.com/sefop/sefop-sctc-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/sefop/sefop-sctc-2026/actions/workflows/ci.yml)
+[![Tests](https://github.com/sefop/sefop-sctc-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/sefop/sefop-sctc-2026/actions/workflows/ci.yml)
 
-This repository is the program from the workshop. It reads one cargo flight, chooses the shipments
-that earn the most revenue without exceeding the aircraft's weight limit, and prints the result
-for the load planner.
-
-> A model is finished when someone decides with it, not when the solver says optimal.
-
-| Run the program | Read why it is built this way |
-| --- | --- |
-| You need Python 3.10 or newer and about five minutes. Follow the [installation instructions](#installation-instructions) below. | The program follows SEFOP, the Software Engineering Framework for Optimization Programs. Start reading at the [SEFOP training hub](https://github.com/sefop/sefop-training-hub). |
-| Then change a shipment in `data/SC101/data.json` and run it again. | Questions, about the workshop or about your own project: ask on the [discussion board](https://github.com/sefop/sefop-training-hub/discussions). |
 
 ## Installation instructions
 
