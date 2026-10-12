@@ -2,8 +2,10 @@
 
 This file records the design of the workshop and what this repository has to do for it. Read it
 before writing any code. The agreed 15-slide story is in [slide-story.md](slide-story.md).
-The business story and feature are agreed; the remaining demonstration contract must be settled
-before implementation, as described in [What to settle first](#what-to-settle-first).
+The business story and feature are agreed. Version 1 of the program, the original knapsack, is
+implemented; see [Settled for version 1](#settled-for-version-1). The rest of the demonstration
+contract must be settled before the feature is implemented, as described in
+[What to settle first](#what-to-settle-first).
 
 This workshop is in the context of SEFOP https://github.com/sefop. It is a 90-min workshop including questions.
 The conference is : https://sctcconsultants.glueup.com/event/2026-sctc-annual-conference-save-the-date-october-11-14-2026-170072/
@@ -155,9 +157,48 @@ immediately after it; the planner's script is refined in parallel.
 7. **The local deployment mechanism and offline fallback.** Agree what the presenter updates and
    launches, and how each checkpoint can be reproduced without writing code live.
 
+## Settled for version 1
+
+Version 1 is the original revenue-maximizing knapsack, the starting point of slides 1 and 8. It is
+implemented. The customer-service feature is not part of it.
+
+- **Model:** each shipment flies or is left behind (0/1), with a revenue and a weight. Aircraft
+  weight is the only limit and it is hard. There is no volume limit.
+- **Customer:** every shipment names its customer in the input, the domain and the output table.
+  The version 1 model ignores it.
+- **Inputs:** `data/<flight>/data.json` with `flightId`, `maxWeightKg` and `shipments`
+  (`id`, `customer`, `weightKg`, `revenueUsd`).
+- **Prepared flight:** `SC101`, 1,000 kg, nine shipments, six invented customers. Maximum revenue
+  is $9,600 with a single optimal load (S1-S4), serving two customers. Checked by enumeration,
+  the most customers servable at each revenue level is: 4 customers at $9,200 (4.2% below the
+  maximum), 5 at $8,800 (8.3%), 6 at $8,100 (15.6%). Allowances of 5%, 10% and 20% would
+  therefore give three different options; the values themselves are still to be agreed.
+  `SC001` is a three-shipment flight that can be checked by hand.
+- **Command:** `python -m cli optimize_cargo <flight>`, use case `OptimizeCargo`. It is the only
+  command.
+- **Solver:** HiGHS (`highspy`) is the only solving path. Brute-force enumeration is the reference
+  the tests compare it against.
+- **Pipeline:** preprocessing sets aside shipments heavier than the weight limit, HiGHS solves,
+  postprocessing orders the load as the flight lists it.
+- **Output:** one plain-text table on the console, at most 80 columns. No files are written.
+- **Outcomes:** a load (exit code 0); "No shipment fits on this flight" when every shipment alone
+  exceeds the weight limit (1); "Cannot plan this flight: ..." naming what to correct when the
+  data is missing or wrong (2). A 0/1 knapsack is never mathematically infeasible, because
+  loading nothing always respects the limit, so "no shipment fits" stands in for infeasibility
+  in this version.
+- **Ties:** not handled in version 1. Any load with the maximum revenue is accepted, and tests
+  assert the revenue, not the load.
+- **Tooling:** Python 3.10 or newer; `requirements.txt` holds `highspy`, `pytest` and the project
+  itself, `requirements-dev.txt` adds `black` and `mypy`; one CI workflow on Python 3.10 and 3.13.
+- **First page:** the book entrance points to `sefop/sefop-training-hub` and the discussion board
+  to its GitHub Discussions.
+
 ## Open items
 
-- The detailed cargo formulation, shipment example, allowance values and planner's script.
+- The three revenue-sacrifice allowance values, tie handling among customer-service options, and
+  whether the feature is a second command or a change to `optimize_cargo`.
+- The side-by-side options table.
+- The planner's script.
 - The local deployment mechanism and confirmation of the fallback recording.
 - Whether American Airlines stories stay at a public level (working assumption: yes).
 - Host checklist for Dr. Gupta: exact start and end inside 1:30-3:30 pm; separate room or ballroom
