@@ -52,6 +52,12 @@ class Orchestrator:
         Returns:
             A Load with the highest total revenue, or None if no shipment can
             fly at all.
+
+        Raises:
+            RuntimeError: If the solution provider fails to produce a load.
+                Loading nothing is always possible, so a provider that
+                returns no load has malfunctioned; that must not be reported
+                to the planner as "no shipment fits".
         """
         data = self._preprocessing.run(flight)
         if not data.feasible_shipments:
@@ -62,5 +68,5 @@ class Orchestrator:
         logger.info("Solving with provider: %s", self._solution_provider.name)
         load = self._solution_provider.solve(data)
         if load is None:
-            return None
+            raise RuntimeError(f"{self._solution_provider.name} did not return a load")
         return self._postprocessing.run(load)

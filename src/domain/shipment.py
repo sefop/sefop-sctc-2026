@@ -44,10 +44,6 @@ class Shipment:
         if not self.customer:
             raise ValueError(f"shipment '{self.id}' has no customer")
         if self.weight_kg <= 0:
-            raise ValueError(
-                f"shipment '{self.id}' has weight {self.weight_kg} kg; weight must be greater than 0"
-            )
+            raise ValueError(f"shipment '{self.id}' has weight {self.weight_kg} kg; weight must be greater than 0")
         if self.revenue_usd <= 0:
-            raise ValueError(
-                f"shipment '{self.id}' has revenue {self.revenue_usd} USD; revenue must be greater than 0"
-            )
+            raise ValueError(f"shipment '{self.id}' has revenue {self.revenue_usd} USD; revenue must be greater than 0")

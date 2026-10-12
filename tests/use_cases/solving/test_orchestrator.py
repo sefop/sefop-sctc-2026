@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from domain.load import Load
 from tests.builders import a_flight, loaded_ids
 from use_cases.solving.optimization.solution_provider import SolutionProvider
@@ -77,12 +79,10 @@ def test_no_load_is_returned_and_the_solver_is_not_called_when_no_shipment_fits(
     assert provider.received is None
 
 
-def test_no_load_is_returned_when_the_solver_finds_none():
+def test_a_solver_failure_is_an_error_and_not_reported_as_no_shipment_fits():
     # ARRANGE
     flight = a_flight(1000, [("S1", "Atlas Steel", 300, 3000)])
 
-    # ACT
-    load = _orchestrator(_FindsNothing()).solve(flight)
-
-    # ASSERT
-    assert load is None
+    # ACT / ASSERT
+    with pytest.raises(RuntimeError, match="did not return a load"):
+        _orchestrator(_FindsNothing()).solve(flight)

@@ -127,9 +127,7 @@ class MipHighsSolutionProvider(SolutionProvider):
         """
         solution = highs_model.getSolution()
         loaded = [
-            shipment
-            for i, shipment in enumerate(data.feasible_shipments)
-            if solution.col_value[i] > _LOADED_THRESHOLD
+            shipment for i, shipment in enumerate(data.feasible_shipments) if solution.col_value[i] > _LOADED_THRESHOLD
         ]
         return Load(flight=data.flight, loaded=loaded)
 
