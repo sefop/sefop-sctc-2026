@@ -10,15 +10,27 @@
 
 ## Installation instructions
 
-1. Get the code: on GitHub choose **Code → Download ZIP** and unzip it, or fork and clone the
-   repository. Open a terminal in the project folder.
-
-2. Create a virtual environment and activate it:
+1. Clone the repository and move into its folder:
 
    ```bash
-   python -m venv .venv
-   .venv\Scripts\activate        # Windows
-   source .venv/bin/activate     # macOS / Linux
+   git clone https://github.com/sefop/sefop-sctc-2026.git
+   cd sefop-sctc-2026
+   ```
+
+2. Create a virtual environment with Python 3.12 and activate it.
+
+   On Windows:
+
+   ```bash
+   py -3.12 -m venv .venv
+   .venv\Scripts\activate
+   ```
+
+   On macOS or Linux:
+
+   ```bash
+   python3.12 -m venv .venv
+   source .venv/bin/activate
    ```
 
 3. Install what the program needs (the HiGHS solver, the test runner and the program itself):
