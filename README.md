@@ -78,6 +78,13 @@
 
 ## Business problem
 
+<p align="center">
+  <img src="assets/planner_image.png" width="640"
+       alt="A load planner at a desk beside a freighter being loaded, with six customers' shipments in front of
+            them, four marked loaded and two left behind, under the goal of maximizing revenue while total
+            weight stays within the aircraft's capacity">
+</p>
+
 A cargo flight has more shipments waiting than it can carry. A load planner decides which ones
 fly. Each shipment belongs to a customer, has a weight, and earns a revenue if it flies. The
 aircraft can carry only so much weight, and that limit is physical: it is never exceeded.
@@ -174,18 +181,12 @@ Put together, the complete model reads:
 
 $$
 \begin{aligned}
-\max_{x} \quad & \sum_{i \in I} r_i x_i \
-\text{s.t.} \quad & \sum_{i \in I} w_i x_i \le W & \text{(C1) weight limit} \
+\max_{x} \quad & \sum_{i \in I} r_i x_i \\
+\text{s.t.} \quad & \sum_{i \in I} w_i x_i \le W & \text{(C1) weight limit} \\
 & x_i \in \lbrace 0, 1 \rbrace \quad \forall i \in I & \text{(C2) whole shipments}
 \end{aligned}
 $$
 
-Note the feasible region is never empty: loading nothing, $x_i = 0$ for every $i \in I$, always
-respects (C1).
-
-- The customer of each shipment is in the data and in the output, but not in the model.
-- When several loads earn the same maximum revenue, the program returns any one of them.
-- The model is a simplification of the planner's decision, not a copy of it.
 
 ### Notation
 
