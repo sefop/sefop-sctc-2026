@@ -188,8 +188,8 @@ implemented. The customer-service feature is not part of it.
   in this version.
 - **Ties:** not handled in version 1. Any load with the maximum revenue is accepted, and tests
   assert the revenue, not the load.
-- **Tooling:** Python 3.10 or newer; `requirements.txt` holds `highspy`, `pytest` and the project
-  itself, `requirements-dev.txt` adds `black` and `mypy`; one CI workflow on Python 3.10 and 3.13.
+- **Tooling:** Python 3.10 or newer; one `requirements.txt` holds `highspy`, `pytest`, `black`,
+  `mypy` and the project itself; one CI workflow on Python 3.10 and 3.13.
 - **First page:** the book entrance points to `sefop/sefop-training-hub` and the discussion board
   to its GitHub Discussions.
 

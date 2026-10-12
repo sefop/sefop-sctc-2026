@@ -176,11 +176,10 @@ The solver's answer is trusted because, on small flights, it earns exactly the s
 trying every possible load one by one
 (`tests/use_cases/solving/optimization/test_providers_agree_with_enumeration.py`).
 
-To change the code, install the formatter and the type checker as well, and run all three checks
-before committing:
+To change the code, run all three checks before committing. The installation already brought in
+the formatter and the type checker:
 
 ```bash
-pip install -r requirements-dev.txt
 black src tests    # format
 mypy               # check the type hints
 pytest             # run the tests

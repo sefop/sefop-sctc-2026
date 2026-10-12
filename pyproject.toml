@@ -8,8 +8,7 @@
 # - [project]: Metadata (name, version, supported Python)
 # - [tool.*]: Configuration for specific tools (setuptools, pytest, black, mypy)
 #
-# The libraries this project needs are listed in requirements.txt (to run the
-# program and its tests) and requirements-dev.txt (to also format and type-check).
+# The libraries this project needs are listed in requirements.txt.
 # =============================================================================
 
 [build-system]

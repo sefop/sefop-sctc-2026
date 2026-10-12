@@ -45,7 +45,7 @@ jobs:
 
       # Step 3: Install the program, the test runner, black and mypy.
       - name: Install dependencies
-        run: pip install -r requirements-dev.txt
+        run: pip install -r requirements.txt
 
       # Step 4: Format check. `--check` verifies without rewriting files.
       # If this fails, run `black src tests` locally and push the result.
