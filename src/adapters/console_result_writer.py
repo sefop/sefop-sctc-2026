@@ -4,7 +4,9 @@ ROLE: Implementation of BaseResultWriter that prints the outcome to the terminal
 WHY THIS EXISTS:
     This module is the only place in the codebase that decides how an outcome
     looks to the planner. It prints one short table per run, in plain text, so
-    it stays readable when projected and works in any terminal. A different
+    it stays readable when projected and works in any terminal. The stage
+    boxes printed above the table are not drawn here: they come from the log
+    (use_cases/stage_log.py). A different
     presentation (a file, a web page) is a new BaseResultWriter, not a change
     here.
 """

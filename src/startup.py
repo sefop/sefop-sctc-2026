@@ -1,16 +1,20 @@
-"""Configuration and composition root for the application.
+"""
+ROLE: Composition root — holds the settings and assembles the program's parts.
 
-This module has two jobs, kept together because they're two sides of the
-same coin:
+WHY THIS EXISTS:
+    This module has two jobs, kept together because they are two sides of the
+    same coin:
 
-1. Hold every configurable value (the `Settings` dataclass) in one place,
-   rather than scattered as literal strings across the codebase.
-2. Assemble the object graph the CLI needs (the `build_*` factory
-   functions). This is the only module in the codebase allowed to import
-   concrete adapters and construct concrete use cases directly. cli.py calls
-   these factory functions instead of constructing anything itself, so every
-   other module can depend on abstract ports (use_cases/ports/) without
-   knowing which concrete adapter ultimately gets wired in.
+    1. Hold every configurable value (the `Settings` dataclass) in one place,
+       rather than scattered as literal strings across the codebase.
+    2. Assemble the objects the command line needs (the `build_*` functions).
+       This is the only module allowed to import concrete adapters and build
+       concrete use cases. cli.py calls these functions instead of building
+       anything itself, so every other module can depend on abstract ports
+       (use_cases/ports/) without knowing which concrete adapter is wired in.
+
+    The consequence: to read flights from a database, or to use another
+    solver, this is the one file that changes.
 """
 
 from __future__ import annotations

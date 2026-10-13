@@ -1,10 +1,16 @@
-"""Orchestrates the full "optimize cargo" use case.
+"""
+ROLE: Orchestrator — runs the "optimize cargo" use case for one flight.
 
-This is the application-layer entry point that calling code (cli.py) uses to
-plan one flight: choose the shipments that fly so that revenue is as high as
-possible without exceeding the aircraft's weight limit. It coordinates loading
-data and running the solving pipeline, so callers don't need to manage those
-steps themselves.
+WHY THIS EXISTS:
+    A use case is one thing the planner asks the program to do. This one is
+    "choose the shipments that fly so that revenue is as high as possible
+    without exceeding the aircraft's weight limit". The module coordinates
+    reading the flight and running the solving pipeline, and turns whatever
+    happens into one of three outcomes, so the caller (cli.py) deals with a
+    single call and a single answer.
+
+    It contains no rule of its own: what makes a flight valid lives in
+    domain/, and how a load is chosen lives in use_cases/solving/.
 """
 
 from __future__ import annotations
@@ -36,6 +42,9 @@ class OptimizeCargo:
     def optimize(self, flight_id: str) -> OptimizationResponse:
         """Load a flight and choose the shipments that fly.
 
+        Each stage is announced in the log as it starts, so whoever watches
+        the console can follow the run.
+
         Args:
             flight_id: Identifier of the flight to plan.
 
@@ -56,6 +65,8 @@ class OptimizeCargo:
             return OptimizationResponse.invalid_input(f"no data was found for flight '{flight_id}'")
 
         customers = {shipment.customer for shipment in flight.shipments}
+        # ",.10g" writes 1000.0 as "1,000" and 350.5 as "350.5": thousands
+        # separators, and decimals only when the weight has them.
         logger.info("Flight %s, weight limit %s kg", flight.flight_id, f"{flight.max_weight_kg:,.10g}")
         logger.info("%s from %s", _count(len(flight.shipments), "shipment"), _count(len(customers), "customer"))
 

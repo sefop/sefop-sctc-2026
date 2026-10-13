@@ -30,6 +30,9 @@ def log_stage(logger: logging.Logger, title: str) -> None:
     inner_width = _BOX_WIDTH - 2
     rule = "#" + "-" * inner_width + "#"
 
+    # The blank line separates this stage from the lines of the previous one.
+    # It comes before the box, not after it, because a stage does not know
+    # when it has logged its last line.
     logger.info("")
     logger.info(rule)
     logger.info("#" + title.center(inner_width) + "#")

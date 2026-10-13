@@ -1,12 +1,18 @@
-"""Command-line interface for the cargo optimizer.
+"""
+ROLE: Entry point — the command line the planner types into.
 
-This is the delivery mechanism for the CLI. Its only job is to parse
-arguments and dispatch to whatever startup.py assembles — it never
-constructs a concrete adapter or use case itself; that composition-root
-responsibility belongs entirely to startup.py.
+WHY THIS EXISTS:
+    Something has to turn typed words into a call to the program and turn the
+    outcome back into something the terminal understands (text and an exit
+    code). That is all this file does: it reads the arguments, switches the
+    stage log on, and hands over to whatever startup.py assembles. It never
+    builds a concrete adapter or use case itself, so replacing the terminal
+    with another front end (a web page, a scheduled job) means writing a new
+    entry point next to this one, not changing the program behind it.
 
-Run with:
+HOW TO RUN:
     python -m cli optimize_cargo <flight_id>
+    python -m cli --verbose optimize_cargo <flight_id>
 """
 
 from __future__ import annotations
@@ -61,14 +67,27 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def _optimize_cargo(args: argparse.Namespace, settings: Settings) -> int:
-    """Plan one flight and print the outcome. Returns the process exit code."""
+    """Plan one flight and print the outcome.
+
+    Args:
+        args: The parsed command line; flight_id and data_folder are read.
+        settings: The default settings, before the command line overrides them.
+
+    Returns:
+        The process exit code for the outcome, as listed in _EXIT_CODES.
+    """
     data_folder = args.data_folder or settings.folder_path
+    # Settings is copied with the new folder rather than modified, so the
+    # defaults stay untouched for anything else that reads them.
     settings = replace(settings, folder_path=data_folder)
 
     optimize_cargo = startup.build_optimize_cargo(settings)
     writer = startup.build_result_writer()
 
     response = optimize_cargo.optimize(args.flight_id)
+    # The Result stage is announced here, not in the use case, because
+    # presenting the outcome is this entry point's job: the use case returns a
+    # response and does not know it will be printed.
     log_stage(logger, "Result")
     writer.write(response)
 
@@ -76,6 +95,7 @@ def _optimize_cargo(args: argparse.Namespace, settings: Settings) -> int:
 
 
 def main() -> None:
+    """Run the command typed by the planner and end the process with its exit code."""
     parser = _build_parser()
     args = parser.parse_args()
     settings = Settings(show_solver_log=args.verbose)
@@ -94,6 +114,8 @@ def main() -> None:
         else:
             raise AssertionError(f"Unhandled command: {args.command}")
     finally:
+        # Removed even when the run fails, so calling main() twice in one
+        # process (as the tests do) never prints every line twice.
         root_logger.removeHandler(handler)
 
     sys.exit(exit_code)

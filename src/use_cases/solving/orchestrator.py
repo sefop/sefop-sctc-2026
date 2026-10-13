@@ -5,9 +5,10 @@ WHY THIS EXISTS:
     The Orchestrator is the public face of the use case's internal solving
     pipeline (this whole `solving/` subpackage is an implementation detail of
     `OptimizeCargo`, not a top-level architecture layer). Given a Flight, it
-    runs three explicit stages: preprocessing -> solving -> postprocessing.
-    Returns a Load or None. Callers never need to know which provider ran or
-    how preprocessing/postprocessing work.
+    runs three explicit stages: preprocessing -> solving -> postprocessing,
+    announcing each one in the log as it starts. Returns a Load or None.
+    Callers never need to know which provider ran or how
+    preprocessing/postprocessing work.
 """
 
 from __future__ import annotations
