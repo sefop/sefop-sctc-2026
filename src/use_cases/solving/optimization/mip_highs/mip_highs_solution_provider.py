@@ -37,6 +37,14 @@ class MipHighsSolutionProvider(SolutionProvider):
     Where x_i is 1 if shipment i flies and 0 if it is left behind.
     """
 
+    def __init__(self, show_solver_log: bool = False) -> None:
+        """
+        Args:
+            show_solver_log: When True, HiGHS prints its own progress log
+                (model size, presolve, branch and bound, timing) to the console.
+        """
+        self._show_solver_log = show_solver_log
+
     @property
     def name(self) -> str:
         return "MIP (HiGHS)"
@@ -55,15 +63,16 @@ class MipHighsSolutionProvider(SolutionProvider):
 
         highs_model = highspy.Highs()
         # HiGHS prints a detailed log by default. The planner's console shows
-        # the decision, not the solver's progress, so that log is switched off.
-        highs_model.setOptionValue("output_flag", False)
+        # the decision, not the solver's progress, so that log is off unless
+        # it was asked for.
+        highs_model.setOptionValue("output_flag", self._show_solver_log)
         self._add_variables(shipments, highs_model)
         self._set_objective(shipments, highs_model)
         self._add_constraints(shipments, data.flight.max_weight_kg, highs_model)
 
         highs_model.run()
         status = highs_model.getModelStatus()
-        logger.info("HiGHS terminated with status: %s", highs_model.modelStatusToString(status))
+        logger.info("Status: %s", highs_model.modelStatusToString(status))
 
         if status != highspy.HighsModelStatus.kOptimal:
             return None

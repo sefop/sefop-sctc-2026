@@ -19,6 +19,9 @@ from dataclasses import replace
 import startup
 from startup import Settings
 from use_cases.optimization_response import Outcome
+from use_cases.stage_log import log_stage
+
+logger = logging.getLogger(__name__)
 
 # What the program tells the operating system when it ends, one code per
 # outcome, so a script calling this program can tell the outcomes apart
@@ -37,7 +40,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--verbose",
         action="store_true",
-        help="Also show what the program is doing at each step (off by default to keep the output short).",
+        help="Also show the solver's own log inside the Solve stage (off by default to keep the output short).",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -66,6 +69,7 @@ def _optimize_cargo(args: argparse.Namespace, settings: Settings) -> int:
     writer = startup.build_result_writer()
 
     response = optimize_cargo.optimize(args.flight_id)
+    log_stage(logger, "Result")
     writer.write(response)
 
     return _EXIT_CODES[response.outcome]
@@ -74,15 +78,23 @@ def _optimize_cargo(args: argparse.Namespace, settings: Settings) -> int:
 def main() -> None:
     parser = _build_parser()
     args = parser.parse_args()
-    # Step-by-step messages go to the error stream, and only on request, so
-    # the planner's table is the only thing on screen in a normal run.
-    logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING, format="%(levelname)s: %(message)s")
-    settings = Settings()
+    settings = Settings(show_solver_log=args.verbose)
 
-    if args.command == "optimize_cargo":
-        exit_code = _optimize_cargo(args, settings)
-    else:
-        raise AssertionError(f"Unhandled command: {args.command}")
+    # The stages of a run are announced through Python's logging. They go to
+    # standard output, as plain text, so the stage boxes, the solver's log and
+    # the result table appear on screen in the order they happen.
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(logging.Formatter("%(message)s"))
+    root_logger = logging.getLogger()
+    root_logger.addHandler(handler)
+    root_logger.setLevel(logging.INFO)
+    try:
+        if args.command == "optimize_cargo":
+            exit_code = _optimize_cargo(args, settings)
+        else:
+            raise AssertionError(f"Unhandled command: {args.command}")
+    finally:
+        root_logger.removeHandler(handler)
 
     sys.exit(exit_code)
 

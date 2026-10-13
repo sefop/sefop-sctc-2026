@@ -68,5 +68,17 @@ def test_the_solver_prints_nothing_on_the_planners_console(capfd):
     assert capfd.readouterr().out == ""
 
 
+def test_the_solver_log_is_shown_when_asked_for(capfd):
+    # ARRANGE
+    flight = a_flight(1000, [("S1", "Atlas Steel", 300, 3000)])
+
+    # ACT
+    load = MipHighsSolutionProvider(show_solver_log=True).solve(ready_to_solve(flight))
+
+    # ASSERT — the log appears, and the answer is the same as without it
+    assert "HiGHS" in capfd.readouterr().out
+    assert loaded_ids(load) == ["S1"]
+
+
 def test_decision_variables_are_named_after_their_shipment():
     assert MipHighsSolutionProvider.variable_name("S1") == "load_S1"

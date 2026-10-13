@@ -61,7 +61,7 @@ def test_a_command_is_required(monkeypatch, capsys):
     assert "optimize_cargo" in capsys.readouterr().err
 
 
-def test_the_step_by_step_log_is_off_unless_asked_for(tmp_path, monkeypatch, capfd):
+def test_a_flight_that_cannot_be_read_goes_straight_from_reading_to_the_result(tmp_path, monkeypatch, capfd):
     # ARRANGE
     monkeypatch.setattr("sys.argv", ["cli", "optimize_cargo", "SC999", "--data-folder", str(tmp_path)])
 
@@ -69,7 +69,65 @@ def test_the_step_by_step_log_is_off_unless_asked_for(tmp_path, monkeypatch, cap
     with pytest.raises(SystemExit):
         cli.main()
 
-    # ASSERT — nothing but the planner's message, and nothing on the error stream
+    # ASSERT — the whole screen, and nothing on the error stream
     captured = capfd.readouterr()
-    assert captured.out == "Cannot plan this flight: no data was found for flight 'SC999'.\n"
+    assert captured.out == (
+        "\n"
+        "#----------------------------------#\n"
+        "#            Read data             #\n"
+        "#----------------------------------#\n"
+        "\n"
+        "#----------------------------------#\n"
+        "#              Result              #\n"
+        "#----------------------------------#\n"
+        "Cannot plan this flight: no data was found for flight 'SC999'.\n"
+    )
     assert captured.err == ""
+
+
+def test_the_solver_log_is_off_unless_asked_for(tmp_path, monkeypatch, capfd):
+    # ARRANGE
+    _write_flight(
+        tmp_path,
+        "SC001",
+        {
+            "flightId": "SC001",
+            "maxWeightKg": 500,
+            "shipments": [{"id": "S1", "customer": "Atlas Steel", "weightKg": 300, "revenueUsd": 3000}],
+        },
+    )
+    monkeypatch.setattr("sys.argv", ["cli", "optimize_cargo", "SC001", "--data-folder", str(tmp_path)])
+
+    # ACT
+    with pytest.raises(SystemExit):
+        cli.main()
+
+    # ASSERT — the Solve stage shows the solver's name and status, not its log
+    printed = capfd.readouterr().out
+    assert "Solver: MIP (HiGHS)\nStatus: Optimal\n" in printed
+    assert "Running HiGHS" not in printed
+
+
+def test_verbose_shows_the_solver_log_inside_the_solve_stage(tmp_path, monkeypatch, capfd):
+    # ARRANGE
+    _write_flight(
+        tmp_path,
+        "SC001",
+        {
+            "flightId": "SC001",
+            "maxWeightKg": 500,
+            "shipments": [{"id": "S1", "customer": "Atlas Steel", "weightKg": 300, "revenueUsd": 3000}],
+        },
+    )
+    monkeypatch.setattr("sys.argv", ["cli", "--verbose", "optimize_cargo", "SC001", "--data-folder", str(tmp_path)])
+
+    # ACT
+    with pytest.raises(SystemExit) as exc_info:
+        cli.main()
+
+    # ASSERT — capfd also captures output written by the solver's own C++ code
+    printed = capfd.readouterr().out
+    assert exc_info.value.code == 0
+    assert "Flight SC001" in printed
+    solver_log = printed.index("Running HiGHS")
+    assert printed.index("Solver: MIP (HiGHS)") < solver_log < printed.index("Status: Optimal")

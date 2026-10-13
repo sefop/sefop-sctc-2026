@@ -56,6 +56,11 @@ def _decisions(printed: str) -> dict[str, str]:
     return decisions
 
 
+def _stages(printed: str) -> list[str]:
+    """Return the titles of the stage boxes, in the order they were printed."""
+    return [line.strip("# ") for line in printed.splitlines() if line.startswith("# ")]
+
+
 def _total(printed: str, label: str) -> str:
     """Return the text after a totals label such as "Revenue"."""
     line = next(line for line in printed.splitlines() if line.startswith(label))
@@ -109,6 +114,8 @@ def test_when_no_shipment_fits_the_planner_is_told_so(monkeypatch, capsys):
     assert exit_code == 1
     assert "No shipment fits on this flight" in printed
     assert "LOADED" not in printed
+    # There is nothing to decide, so the run goes from preprocessing to the result.
+    assert _stages(printed) == ["Read data", "Preprocess", "Result"]
 
 
 @pytest.mark.integration
@@ -136,11 +143,12 @@ def test_wrong_or_missing_data_is_explained_instead_of_planned(monkeypatch, caps
     # ARRANGE / ACT
     printed, exit_code = _run_cli(situation, _RESOURCES_DIR, monkeypatch, capsys)
 
-    # ASSERT — one sentence for the planner: no table, and no Python traceback
+    # ASSERT — the run stops at reading the data, and the result is one
+    # sentence for the planner: no table, and no Python traceback
     assert exit_code == 2
-    assert printed.startswith("Cannot plan this flight: ")
+    assert _stages(printed) == ["Read data", "Result"]
+    assert printed.splitlines()[-1].startswith("Cannot plan this flight: ")
     assert reason in printed
-    assert len(printed.splitlines()) == 1
 
 
 @pytest.mark.integration
@@ -155,6 +163,46 @@ def test_the_workshop_flight_loads_the_four_shipments_that_earn_the_most(monkeyp
     assert _total(printed, "Shipments") == "4 loaded, 5 left behind"
     assert _total(printed, "Revenue") == "$9,600"
     assert _total(printed, "Weight used") == "1,000 of 1,000 kg"
+
+
+@pytest.mark.integration
+def test_the_workshop_flight_shows_each_stage_of_the_program_before_the_result(monkeypatch, capsys):
+    # ARRANGE / ACT
+    printed, _ = _run_cli("SC101", _DATA_DIR, monkeypatch, capsys)
+
+    # ASSERT — everything above the result table, exactly as it appears on screen
+    assert _stages(printed) == ["Read data", "Preprocess", "Solve", "Postprocess", "Result"]
+    assert printed.startswith(
+        "\n"
+        "#----------------------------------#\n"
+        "#            Read data             #\n"
+        "#----------------------------------#\n"
+        "Flight SC101, weight limit 1,000 kg\n"
+        "9 shipments from 6 customers\n"
+        "\n"
+        "#----------------------------------#\n"
+        "#            Preprocess            #\n"
+        "#----------------------------------#\n"
+        "9 shipments can fly\n"
+        "0 set aside (heavier than the limit)\n"
+        "\n"
+        "#----------------------------------#\n"
+        "#              Solve               #\n"
+        "#----------------------------------#\n"
+        "Solver: MIP (HiGHS)\n"
+        "Status: Optimal\n"
+        "\n"
+        "#----------------------------------#\n"
+        "#           Postprocess            #\n"
+        "#----------------------------------#\n"
+        "4 shipments loaded, in flight order\n"
+        "\n"
+        "#----------------------------------#\n"
+        "#              Result              #\n"
+        "#----------------------------------#\n"
+        "Flight SC101   weight limit 1,000 kg\n"
+    )
+    assert max(len(line) for line in printed.splitlines()) <= 80
 
 
 @pytest.mark.integration

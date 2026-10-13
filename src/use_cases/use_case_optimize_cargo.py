@@ -14,6 +14,7 @@ import logging
 from use_cases.optimization_response import OptimizationResponse
 from use_cases.ports.base_data_loader import BaseDataLoader
 from use_cases.solving.orchestrator import Orchestrator
+from use_cases.stage_log import log_stage
 
 logger = logging.getLogger(__name__)
 
@@ -43,23 +44,28 @@ class OptimizeCargo:
             "no shipment fits", or an explanation of what is wrong with the
             flight's data.
         """
-        logger.info("Planning flight: %s", flight_id)
+        log_stage(logger, "Read data")
 
         # Wrong or missing data is an expected outcome, not a crash: the
         # planner gets an explanation they can act on instead of a traceback.
         try:
             flight = self._flight_loader.load(flight_id)
         except ValueError as exc:
-            logger.info("Invalid data for flight %s: %s", flight_id, exc)
             return OptimizationResponse.invalid_input(str(exc))
         if flight is None:
-            logger.info("Flight not found: %s", flight_id)
             return OptimizationResponse.invalid_input(f"no data was found for flight '{flight_id}'")
+
+        customers = {shipment.customer for shipment in flight.shipments}
+        logger.info("Flight %s, weight limit %s kg", flight.flight_id, f"{flight.max_weight_kg:,.10g}")
+        logger.info("%s from %s", _count(len(flight.shipments), "shipment"), _count(len(customers), "customer"))
 
         load = self._orchestrator.solve(flight)
         if load is None:
-            logger.info("No shipment fits on flight: %s", flight_id)
             return OptimizationResponse.no_shipment_fits(flight)
 
-        logger.info("Flight %s planned", flight_id)
         return OptimizationResponse.loaded(load)
+
+
+def _count(number: int, noun: str) -> str:
+    """Word a count: "1 shipment", "9 shipments"."""
+    return f"{number} {noun}" if number == 1 else f"{number} {noun}s"

@@ -19,6 +19,7 @@ from domain.load import Load
 from use_cases.solving.optimization.solution_provider import SolutionProvider
 from use_cases.solving.postprocessing.postprocessing import PostProcess
 from use_cases.solving.preprocessing.preprocessing import PreProcess
+from use_cases.stage_log import log_stage
 
 logger = logging.getLogger(__name__)
 
@@ -59,14 +60,24 @@ class Orchestrator:
                 returns no load has malfunctioned; that must not be reported
                 to the planner as "no shipment fits".
         """
+        log_stage(logger, "Preprocess")
         data = self._preprocessing.run(flight)
+        can_fly = len(data.feasible_shipments)
+        logger.info("%d %s can fly", can_fly, "shipment" if can_fly == 1 else "shipments")
+        logger.info("%d set aside (heavier than the limit)", len(flight.shipments) - can_fly)
         if not data.feasible_shipments:
             # Every shipment alone weighs more than the aircraft can carry,
             # so there is no decision to make.
-            logger.info("No shipment fits within the weight limit; skipping solve")
             return None
-        logger.info("Solving with provider: %s", self._solution_provider.name)
+
+        log_stage(logger, "Solve")
+        logger.info("Solver: %s", self._solution_provider.name)
         load = self._solution_provider.solve(data)
         if load is None:
             raise RuntimeError(f"{self._solution_provider.name} did not return a load")
-        return self._postprocessing.run(load)
+
+        log_stage(logger, "Postprocess")
+        load = self._postprocessing.run(load)
+        loaded = len(load.loaded)
+        logger.info("%d %s loaded, in flight order", loaded, "shipment" if loaded == 1 else "shipments")
+        return load

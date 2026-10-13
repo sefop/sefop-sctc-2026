@@ -180,7 +180,10 @@ implemented. The customer-service feature is not part of it.
   the tests compare it against.
 - **Pipeline:** preprocessing sets aside shipments heavier than the weight limit, HiGHS solves,
   postprocessing orders the load as the flight lists it.
-- **Output:** one plain-text table on the console, at most 80 columns. No files are written.
+- **Output:** plain text on the console, at most 80 columns. Each stage of a run (Read data,
+  Preprocess, Solve, Postprocess, Result) is announced by a boxed title with a line or two of
+  summary; the result table follows under Result. `--verbose` adds the solver's own log inside
+  Solve. No files are written.
 - **Outcomes:** a load (exit code 0); "No shipment fits on this flight" when every shipment alone
   exceeds the weight limit (1); "Cannot plan this flight: ..." naming what to correct when the
   data is missing or wrong (2). A 0/1 knapsack is never mathematically infeasible, because
