@@ -1,12 +1,12 @@
 # sefop-sctc-2026
 
-**Airlines Optimization Workshop: industry best practices for a decision-support system.**
-3rd Annual Southern Colorado Transportation Conference (SCTC 2026), Colorado State University Pueblo.
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue)](https://www.python.org/)
 [![Tests](https://github.com/sefop/sefop-sctc-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/sefop/sefop-sctc-2026/actions/workflows/ci.yml)
 
+**Airlines Optimization Workshop: industry best practices for a decision-support system.**
+
+3rd Annual Southern Colorado Transportation Conference (SCTC 2026), Colorado State University Pueblo.
 
 ## Installation instructions
 
@@ -39,41 +39,16 @@
    pip install -r requirements.txt
    ```
 
-4. Plan the workshop flight:
-
-   ```bash
-   python -m cli optimize_cargo SC101
-   ```
-
-   You should see:
-
-   ```text
-   Flight SC101   weight limit 1,000 kg
-
-   Shipment  Customer          Weight  Revenue  Decision
-   --------  ----------------  ------  -------  -----------
-   S1        Atlas Steel       300 kg   $3,000  LOADED
-   S2        Atlas Steel       250 kg   $2,400  LOADED
-   S3        Atlas Steel       200 kg   $1,900  LOADED
-   S4        Bighorn Auto      250 kg   $2,300  LOADED
-   S5        Bighorn Auto      150 kg   $1,300  left behind
-   S6        Cedar Pharma      100 kg     $800  left behind
-   S7        Dune Electronics  150 kg   $1,100  left behind
-   S8        Elk Outfitters    100 kg     $700  left behind
-   S9        Fremont Farms     200 kg   $1,200  left behind
-
-   Shipments      4 loaded, 5 left behind
-   Revenue        $9,600
-   Weight used    1,000 of 1,000 kg
-   ```
-
-   `python -m cli optimize_cargo SC001` plans a three-shipment flight small enough to check by hand.
-
-5. Run the tests. They finish in about a second; add `-v` to read their names, which are written
-   as sentences a planner would recognize.
+4. Run the tests:
 
    ```bash
    pytest
+   ```
+
+5. Run one case:
+
+   ```bash
+   python -m cli optimize_cargo SC101
    ```
 
 ## Business problem
@@ -85,49 +60,33 @@
             weight stays within the aircraft's capacity">
 </p>
 
-A cargo flight has more shipments waiting than it can carry. A load planner decides which ones
-fly. Each shipment belongs to a customer, has a weight, and earns a revenue if it flies. The
-aircraft can carry only so much weight, and that limit is physical: it is never exceeded.
+A cargo airline sells space on its flights to customers who need goods moved. On a busy day, more
+shipments are waiting at the airport than one aircraft can carry. Someone has to decide which
+shipments fly today and which wait for a later flight. That person is the load planner.
 
-The program supports that decision. It recommends the load that earns the most revenue; the
-planner makes the final call.
+**What the planner knows.** For each shipment: the customer it belongs to, how much it weighs, and
+how much the airline earns if it flies. For the aircraft: the maximum weight it may carry.
 
-In the output above, the aircraft is full and revenue is as high as it can be. Look at the Customer
-column, though: four customers have nothing on this flight. That observation is where the workshop
-starts.
+**The rules.**
 
-**What the planner gives the program.** One folder per flight under `data/`, each holding a
-`data.json`:
+- The weight limit is a safety limit. It is never exceeded, however valuable the cargo.
+- A shipment flies whole or stays behind whole. It cannot be split.
 
-```json
-{
-  "flightId": "SC101",
-  "maxWeightKg": 1000,
-  "shipments": [
-    { "id": "S1", "customer": "Atlas Steel", "weightKg": 300, "revenueUsd": 3000 }
-  ]
-}
-```
+**The goal.** Choose the shipments that earn the most revenue for the flight.
 
-To plan your own flight, copy a folder, rename it, edit the file, and pass the folder's name to
-`optimize_cargo`. The flights, customers and numbers here are invented for the workshop.
+**Why it is hard.** Loading the most valuable shipments first does not always give the best
+result: one heavy shipment can take the room of two lighter ones that together earn more. Nine
+waiting shipments can be combined in 512 ways; thirty, in more than a billion. No one can compare
+them all before departure.
 
-**What the program answers.**
+**Who decides.** The planner does. The recommended load is advice; the planner knows things the
+numbers do not show and makes the final call.
 
-| Situation | What you see | Exit code |
-| --- | --- | --- |
-| A load was chosen | The table above | 0 |
-| The data is fine, but every shipment alone is heavier than the weight limit | `No shipment fits on this flight: ...` | 1 |
-| The data is missing or wrong | `Cannot plan this flight: ...` followed by what to correct | 2 |
+**What the highest revenue hides.** On the workshop flight, six customers have cargo waiting. The
+load that earns the most carries cargo for only two of them; the other four have nothing on this
+flight. That observation is where the workshop starts.
 
-A shipment that alone is heavier than the weight limit is marked `left behind (over weight limit)`,
-to tell it apart from a shipment that fits but lost out to more valuable cargo.
-
-**A planner would not use a terminal.** A terminal is enough to follow one business request from
-the planner's words to a tested program, which is what the workshop does. A screen for the planner
-is a presentation requirement for a later version;
-[`sefop-python-advanced`](https://github.com/sefop/sefop-python-advanced) shows the same ideas
-behind a web application.
+The flights, customers and numbers here are invented for the workshop.
 
 ## Mathematical model
 
@@ -213,8 +172,8 @@ with $W = 500$ kg:
 
 $$
 \begin{aligned}
-\max_{x} \quad & 3000 x_1 + 2000 x_2 + 1800 x_3 \
-\text{s.t.} \quad & 500 x_1 + 250 x_2 + 250 x_3 \le 500 \
+\max_{x} \quad & 3000 x_1 + 2000 x_2 + 1800 x_3 \\
+\text{s.t.} \quad & 500 x_1 + 250 x_2 + 250 x_3 \le 500 \\
 & x_1, x_2, x_3 \in \lbrace 0, 1 \rbrace
 \end{aligned}
 $$
@@ -227,7 +186,11 @@ fit together and earn 3,800 USD. The optimal solution is $x_1 = 0$, $x_2 = 1$, $
 | Revenue     | $3000 \cdot 0 + 2000 \cdot 1 + 1800 \cdot 1$ |    3,800 USD    |
 | Weight used | $500 \cdot 0 + 250 \cdot 1 + 250 \cdot 1$    | 500 of 500 kg   |
 
-`python -m cli optimize_cargo SC001` reproduces it.
+Run the following script in your terminal to reproduce this case:
+
+```bash
+python -m cli optimize_cargo SC001
+```
 
 ## Repository structure
 
@@ -253,15 +216,18 @@ The layout follows [`sefop-python-starter`](https://github.com/sefop/sefop-pytho
 fewer parts. Dependencies point inward: `adapters/` knows about `use_cases/`, never the reverse, and
 `domain/` knows about nothing else.
 
-The solver's answer is trusted because, on small flights, it earns exactly the same revenue as
-trying every possible load one by one
-(`tests/use_cases/solving/optimization/test_providers_agree_with_enumeration.py`).
+**Planning your own flight.** There is one folder per flight under `data/`, each holding a
+`data.json`:
 
-To change the code, run all three checks before committing. The installation already brought in
-the formatter and the type checker:
-
-```bash
-black src tests    # format
-mypy               # check the type hints
-pytest             # run the tests
+```json
+{
+  "flightId": "SC101",
+  "maxWeightKg": 1000,
+  "shipments": [
+    { "id": "S1", "customer": "Atlas Steel", "weightKg": 300, "revenueUsd": 3000 }
+  ]
+}
 ```
+
+Copy a folder, rename it, edit the file, and pass the folder's name to `optimize_cargo`.
+
