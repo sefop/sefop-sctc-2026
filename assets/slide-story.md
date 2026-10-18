@@ -1,6 +1,6 @@
 # Agreed workshop slide story
 
-The agreed structure is 23 slides for a 90-minute workshop, including questions.
+The agreed structure is 18 slides for a 90-minute workshop, including questions.
 No code is written during the workshop. All artifacts are prepared; the program and tests run
 live. Attendees discuss the proposed questions in pairs and record their answers on ordinary
 paper or in a notebook.
@@ -12,19 +12,20 @@ system is software, and because software is fragile and built with imperfect inf
 obtaining and keeping that evidence requires learning quickly and adapting quickly and safely;
 working on a DSS is therefore a cycle that goes round again with every change; engineering
 practices support those abilities. The original cargo business request leads to a
-knapsack model and a runnable system. Only then does an example business change introduce customer service and demonstrate how
-the model and software evolve.
+knapsack model and a runnable system. A business change then shows the cycle starting again.
 
-The workshop has four parts. Part I sets out the principles and builds the baseline system for
-the original request. Part II validates the business change: what the planner needs and how the
-model must change. Part III verifies it: how the software changes and what evidence shows it
-works. Part IV returns to the planner, whose use and feedback start validation again.
+The workshop has four parts. Part I sets out the principles and introduces the example. Part II
+validates the planner's request: interview, user stories, examples and the model. Part III
+verifies the first version: why software needs design and testing, the example's design, and the
+tests that show it computes the model. Part IV zooms out: the cycle runs again as the planner
+asks for client diversity, and the workshop closes with what this profession needs and where to
+keep learning.
 
-The user stories and examples start with the original request and grow when the change arrives.
-The same software diagram is revisited to trace the affected responsibilities. Audience questions,
+The user stories and examples start with the original request and would grow when the change
+arrives. Audience questions,
 test proposals and decisions contribute to the walkthrough.
 
-## Part I — Introduction: principles and baseline
+## Part I — Introduction: principles and the example
 
 ### 1. A decision-support system supports recurring business decisions
 
@@ -57,7 +58,7 @@ test proposals and decisions contribute to the walkthrough.
   acceptance criteria, and feedback from use.
 - Verification asks "are we solving the problem right?": does the code compute exactly what the
   model states? It is a software problem, answered with design and automated tests. A
-  recommendation goes to production only when both hold, and every change asks both again.
+  recommendation goes to production only when both hold.
 - Connecting idea: both kinds of evidence pass through code, so next comes why software makes them
   hard to obtain and keep.
 
@@ -65,16 +66,11 @@ test proposals and decisions contribute to the walkthrough.
 
 - Validation and verification are hard to obtain and keep because a DSS is software: every
   recommendation passes through code that reads data, builds a model and reports the result.
-  Software principles apply whether we know them or not: a sign error in a data-processing
-  script retracted five published papers.
-- Software is a different kind of engineering. A bridge tolerates tiny errors and is designed
-  from well-known requirements; software is flexible and fragile at once, and is built with
-  highly imperfect information.
-- Building it is a discovery process: users do not fully know what they want, they change their
-  minds, and building reveals problems nobody foresaw. So the team must learn quickly and adapt
-  its software quickly and safely, to keep both kinds of evidence as the problem changes.
-- Connecting idea: these characteristics mean the work is never done once; next, the big picture:
-  the full cycle of working on a DSS.
+  Software principles apply whether we know them or not: a sign error in a data-processing script
+  retracted five published papers, and an unhandled overflow in reused code destroyed the Ariane 5
+  rocket 37 seconds after launch.
+- So trustworthy recommendations need software engineering, not only good mathematics.
+- Connecting idea: next, the big picture: the cycle that takes a request all the way to the user.
 
 ### 5. The big picture: working on a DSS is a cycle
 
@@ -83,11 +79,11 @@ test proposals and decisions contribute to the walkthrough.
   arc from request to math model is marked validation; design and code to tests is marked
   verification; deploy and use put the change in the user's hands; feedback starts validation
   again.
-- Validation and verification are not one-time gates. Every business change goes round the whole
-  cycle, and a change helps the user only once it is deployed.
-- Map of the workshop: Part I goes round once for the original request; Part II validates a
-  business change; Part III verifies it; Part IV deploys it, puts it in the planner's hands and
-  collects the feedback that starts the next round.
+- One pass takes a request all the way to the user: a change helps the user only once it is
+  deployed.
+- Map of the workshop: Part I introduces the example; Part II validates the planner's request;
+  Part III verifies the first version; Part IV zooms out: the cycle runs again, then what this
+  profession needs and where to keep learning.
 - Connecting idea: to see the cycle at work, we now follow one concrete DSS round it.
 
 ### 6. Our example DSS: choosing the cargo for each flight
@@ -100,6 +96,8 @@ test proposals and decisions contribute to the walkthrough.
 - What the planner wants from a tool is not yet clear: it reaches us second-hand.
 - Connecting idea: the request arrives as one vague sentence from a manager, so the audience must
   find out from the planner what is really needed.
+
+## Part II — Validation: are we solving the right problem?
 
 ### 7. Audience: interview the planner to find the requirements
 
@@ -139,8 +137,7 @@ test proposals and decisions contribute to the walkthrough.
   Pharma 300 kg, $800. Bighorn can never fly on this aircraft, however valuable; Atlas and Cedar
   together weigh 600 kg, so only Atlas flies: $3,000 and 300 kg.
 - Each example is an acceptance criterion: a situation and the decision the planner expects. This
-  is how validation becomes checkable, and the same two examples return in Part III as automated
-  tests.
+  is how validation becomes checkable.
 - Connecting idea: the user stories and examples now become mathematics, the first translation,
   from business problem to math model.
 
@@ -150,140 +147,108 @@ test proposals and decisions contribute to the walkthrough.
 - Revenue maximization becomes $\max \sum_i r_i x_i$.
 - Aircraft capacity becomes $\sum_i w_i x_i \leq W$.
 - Connecting idea: a model on paper recommends nothing; the second translation, from math model
-  to coded model, turns it into a program the planner can run.
+  to coded model, is where verification begins.
 
-### 10. Software turns the model into a usable recommendation
+## Part III — Verification: are we solving the problem right?
 
-- Read and validate the flight's data.
-- Prepare the instance, solve it, and present the result.
-- Run the original program and interpret the proposed load.
-- Connecting idea: the baseline works and the planner uses it, and then the business asks for
-  something new.
+### 10. Software is a different kind of engineering
 
-## Part II — Validation: define and model the change
+- Visual (from the Purdue workshop): civil engineering beside software engineering.
+- A bridge tolerates tiny errors and is designed from requirements known reasonably well.
+  Software is flexible and fragile at once: one wrong sign can change every recommendation while
+  the program still runs, and it is built with highly imperfect information.
+- Building software is a discovery process: users do not fully know what they want, they change
+  their minds, and building reveals problems nobody foresaw. So the team must learn quickly and
+  adapt its software quickly and safely.
+- Connecting idea: adaptability make quick and safe change possible. This is achieved through
+design and testing.
 
-### 11. The system must support new business needs
+### 11. Design and testing make quick, safe change possible
 
-- Business objectives and rules can evolve.
-- Example request: serve more customers within acceptable revenue sacrifices.
-- Aircraft weight remains a hard limit.
-- Connecting idea: "serve more customers" can be read in several ways, so before changing
-  anything the audience clarifies the new request.
+- Design is how the code is structured into modules, each with one clear responsibility. A change
+  stays small and isolated, and each module can be understood and checked on its own.
+- Testing checks automatically that the code complies with what it should do: it runs the code on
+  cases whose right answer is known, in seconds and as often as needed. That is verification, and
+  it is the safety layer that catches a mistake the moment a change introduces it.
+- Each needs the other: a clear design makes code testable, and tests make it safe to improve the
+  design.
+- Visual: 2 diagrams showing N modules connecting everything to each other, and then N modules connected
+with less connections, indicating a more modularized design.
+- Connecting idea: here we show the purpose of modularization, in the next slide we show how to 
+evaluate a change.
 
-### 12. Audience: clarify the new request
+### 12. What an automated test is
 
-- What exactly does "a customer is served" mean?
-- How much revenue may be sacrificed, and relative to what baseline?
-- What output would help the planner compare alternatives?
-- Answer: a customer is served when at least one of its shipments flies, and counts once however
-  many fly. Revenue sacrifice is measured against the maximum achievable revenue, $R^*$, as a
-  percentage, for example 5%, 10% and 20%. The planner needs the options side by side: loaded
-  shipments, revenue, revenue given up and customers served.
-- Connecting idea: the clarified answers extend the user stories and examples with new acceptance
-  criteria.
+- A test is a small program that runs the code on a case whose right answer is known and checks
+  the result. It has three steps: arrange the case, act by running the code, assert the expected
+  result.
+- Visual: the three steps applied to example 1 of slide 8. Arrange: a flight with a 500 kg limit
+  and three shipments: 500 kg for $3,000, 250 kg for $2,000, and 250 kg for $1,800. Act: ask the
+  tool for a load. Assert: the two 250 kg shipments fly, and the revenue is $3,800.
+- A test runner runs every test automatically, in seconds, with the same result each time; a
+  failed check names exactly what broke. Run after every change, it shows at once whether the
+  change broke something.
+- Connecting idea: with design and tests understood, here is how they look in our example,
+  starting with its design.
 
-### 13. Extend the requirements and acceptance criteria
+### 13. A DSS example design
 
-- Count distinct customers; several loaded shipments for one customer count once.
-- Respect each agreed revenue allowance and the aircraft weight limit.
-- Present three comparable options that the planner can evaluate.
-- Connecting idea: with the new requirements agreed, the model must change to express them, which
-  completes the validation of the change.
+- A DSS is usually divided into the same modules: reading data, preprocessing, optimization,
+  postprocessing, and presenting the result.
+- Run the first version on flight SC101: the console announces each stage in a box: Read data,
+  Preprocess, Solve, Postprocess, Result.
+- Open the repository: each box is one place in `src/`. Reading data is
+  `adapters/json_data_loader.py`; preprocessing, optimization and postprocessing are folders
+  under `use_cases/solving/`; presenting the result is `adapters/console_result_writer.py`.
+- Interpret the proposed load with the audience.
+- Connecting idea: the program produces a load, but does it compute what the model states? Tests
+  are the evidence.
 
-### 14. The new requirement changes the optimization
+### 14. Audience: the planner's examples become acceptance tests
 
-- First establish the maximum achievable revenue, $R^*$.
-- For each allowance $a$, maximize customers served while requiring revenue of at least $(1-a)R^*$.
-- Preserve whole-shipment decisions and the hard weight limit.
-- Connecting idea: the model has changed; verification starts by asking where in the software
-  that change lands.
+- Example 2 of slide 8 as a test. Arrange: a 500 kg limit; shipments of 300 kg for $3,000, 900 kg
+  for $9,000, and 300 kg for $800. Act: ask for a load. Assert: only the first shipment flies,
+  earning $3,000.
+- Predict with your partner: would this test catch code that ignores the weight limit? Code that
+  splits a shipment?
+- Then open the repository: the planner's examples are stored as test flights and run with every
+  other test.
+- Answer: yes to both. Ignoring the limit loads all three shipments (1,500 kg); splitting adds part
+  of the 900 kg shipment to reach $5,000. Example 1 catches only the first bug, because its best
+  load already uses whole shipments: not every example catches every bug, so tests are chosen to
+  cover each requirement.
+- Connecting idea: the tests pass, so the first version is verified and goes into the planner's
+  hands.
 
-## Part III — Verification: implement and check the change
+## Part IV — Zooming out: the next cycle, the profession and SEFOP
 
-### 15. Audience: trace the request through the software
+### 15. The cycle runs again: the planner asks for client diversity
 
-- Revisit the diagram of inputs, validation, solving, and presentation.
-- Identify which responsibilities the new request affects.
-- Explain one connection between a business requirement and a software change.
-- Answer: data reading and validation barely change, since the customer is already in the data.
-  Solving changes most: first find $R^*$, then maximize customers served for each allowance.
-  Presentation changes from one load to three options. Example connection: "count each customer
-  once" becomes one yes/no variable per customer that can be 1 only if one of its shipments flies.
-- Connecting idea: the trace was easy to follow only because each responsibility lives in one
-  place; next, how design makes that possible.
+- Visual: the cycle from slide 5, going round a second time.
+- In use, the planner notices that four of the six customers get nothing on a flight, and asks
+  the tool to serve more customers within an acceptable revenue sacrifice.
+- The request goes round the same cycle: validate it with user stories, examples and a new model;
+  verify it with design and tests; deploy it; use it. Modular, tested software is what makes the
+  second round fast and safe.
+- Connecting idea: every round asks for the same skills; zooming out, here is what this
+  profession needs.
 
-### 16. Design makes the effects of change understandable
+### 16. What this profession needs
 
-- Give data handling, optimization, and presentation clear responsibilities.
-- Make the affected components and their interactions explicit.
-- Organize the software so those responsibilities can be checked independently.
-- Connecting idea: responsibilities that can be checked one at a time invite the question of what
-  evidence would show the change works; the audience proposes it.
+- Validation skills: understanding the business, interviewing users, turning requests into
+  requirements and examples, and modeling.
+- Verification skills: designing modular software and testing it automatically.
+- Connect those skills to Francisco's experience and to students' career opportunities.
+- Connecting idea: one workshop shows the tip of these skills; SEFOP is where to keep learning.
 
-### 17. Audience: propose evidence that the change works
+### 17. SEFOP: where to keep learning
 
-- Design a small example that catches counting shipments instead of customers.
-- Write the expected result before running anything.
-- Propose one additional check for revenue allowance or aircraft weight.
-- Answer: a flight where counting shipments and counting customers disagree. Example: limit
-  200 kg; Atlas Steel has three 60 kg shipments, Bighorn Auto and Cedar Pharma one 100 kg shipment
-  each, and the allowance is large enough that revenue does not bind. Counting shipments loads
-  Atlas's three (3 shipments, 1 customer); counting customers serves 2 (for example Bighorn and
-  Cedar). Expected result, written first: 2 customers served. Extra checks: the weight limit is
-  never exceeded; revenue is at least $(1-a)R^*$; with a 0% allowance the answer equals the
-  original optimum.
-- Connecting idea: the audience's proposed evidence is now compared with the prepared tests, run
-  live.
-
-### 18. Tests check the new behavior and protect existing behavior
-
-- Check that the original revenue-maximizing behavior still works.
-- Check customer counting, revenue allowances, and physical feasibility.
-- Run the prepared tests and connect their results to the user stories and examples; tests are the
-  verification evidence.
-- Connecting idea: the tests pass, so the change is verified and can go back to the planner.
-
-## Part IV — Back to the planner: use, feedback and the next cycle
-
-### 19. Put the tested version into use
-
-- Demonstrate the prepared local update.
-- Launch the changed program on the same flight.
-- Compare loaded shipments, revenue, and customers served across three options.
-- Connecting idea: the program offers three options but does not decide; the planner does, so the
-  audience takes the planner's seat.
-
-### 20. Audience: choose a load and defend your decision
-
-- Choose one of the three options with your partner.
-- Explain the revenue-service tradeoff behind your choice.
-- Identify one piece of missing information that could change your decision.
-- Answer: there is no single right option; I am looking for a choice defended with the numbers.
-  On SC101, serving 4, 5 or 6 customers instead of 2 gives up $400 (4.2%), $800 (8.3%) or
-  $1,500 (15.6%). Missing information that could change the choice: service history, urgent
-  deadlines, whether partial delivery is useful, and future customer relationships.
-- Connecting idea: the information you missed while choosing is exactly the planner's feedback,
-  and it starts the next cycle.
-
-### 21. Planner feedback starts the next learning cycle
-
-- Visual: the cycle from slide 5 again, with the arrow from feedback back to the business request
-  highlighted.
-- Service history and urgent deadlines may affect the planner's choice.
-- Partial-delivery usefulness and future customer relationships may also matter.
-- Recurring missing information can become a requirement for the next version; feedback from use
-  is validation starting again.
-- Connecting idea: each pass through the cycle drew on business understanding, modeling, design
-  and testing, which are skills that build careers.
-
-### 22. These activities connect to professional skills
-
-- Business understanding, modeling, software design, and testing contribute to usable decisions.
-- Connect those skills to Francisco's experience and students' career opportunities.
-- Share the repository, SEFOP reading, and discussion link.
+- The SEFOP training hub and its book: github.com/sefop/sefop-training-hub
+- This workshop's repository, to run and read at home: github.com/sefop/sefop-sctc-2026
+- The discussion board, for questions after today: github.com/sefop/sefop-training-hub/discussions
 - Connecting idea: with the materials shared, the floor opens for questions.
 
-### 23. Questions and discussion
+### 18. Questions and discussion
 
 - What remains unclear about turning a business request into decision-support software?
 - Where would you apply learning and adaptation in your own project?
@@ -296,21 +261,21 @@ Pair discussions are included in these blocks.
 
 | Minutes | Part | Slides | Focus |
 | --- | --- | --- | --- |
-| 0-14 | I | 1-5 | DSS characteristics, trusting a recommendation, validation and verification, a DSS is software, learning and adaptation, and the cycle of working on a DSS |
-| 14-30 | I | 6-10 | Original business request, requirements, knapsack derivation, software, and run |
-| 30-45 | II | 11-14 | Example change, clarification, acceptance criteria and model change |
-| 45-65 | III | 15-18 | Software trace, design, proposed evidence and tests |
-| 65-80 | IV | 19-22 | Local deployment, audience decision, feedback, careers, and next steps |
-| 80-90 | IV | 23 | Questions and discussion |
+| 0-15 | I | 1-6 | DSS characteristics, trust, validation and verification, a DSS is software, the cycle, and the example |
+| 15-38 | II | 7-9 | Planner interview, user stories, examples, and the knapsack model |
+| 38-65 | III | 10-14 | Software as a different kind of engineering, design and testing, what an automated test is, the repository tour, and the planner's examples as acceptance tests |
+| 65-80 | IV | 15-17 | The cycle runs again, what the profession needs, and SEFOP |
+| 80-90 | IV | 18 | Questions and discussion |
 
 ## Pair activity routine
 
 Allow 30-45 seconds of individual thinking, then 1-2 minutes of pair discussion.
 Each pair records one answer and alternates who writes. Hear two contrasting responses,
 connect their reasoning to the requirements, design or evidence, and let everyone revise
-their notes. Give the planner interview and final decision more discussion time.
+their notes. Give the planner interview more discussion time.
 
-Pairs keep four sections in their notes: business request, example change, evidence, and decision.
+Pairs keep three sections in their notes: business request, user stories and examples, and
+evidence.
 The presenter records the user stories from the interview, annotates the software
 diagram with predictions, and compares proposed tests with the prepared checks.
 
@@ -338,10 +303,8 @@ Part II turns into a new objective.
 
 ## Demonstration boundaries
 
-The customer-service change is prepared. A customer is served if at least one of their shipments
-flies, and each customer counts once. The three revenue-sacrifice allowances remain to be agreed.
-Aircraft weight is hard in both versions. The planner makes the final decision; the four examples
-of omitted information on slide 21 are discussion material, not implemented objectives.
+The customer-service change (client diversity) is mentioned on slide 15 as the next round of the
+cycle; it is not built or demonstrated. Aircraft weight is a hard limit.
 
 Deployment is local on Francisco's machine, without separate development, staging or production
 environments. The remaining demonstration decisions are listed in
