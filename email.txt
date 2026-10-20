@@ -1,0 +1,32 @@
+We are a mid-sized cargo airline. We carry goods for business customers on scheduled flights between a handful of
+airports. Our customers range from steel manufacturers and auto-parts suppliers to pharmaceutical companies. Some ship
+with us every week, others only now and then, and their shipments vary a lot: a single crate, a few boxes, or a large
+piece of heavy machinery.
+
+Customers book each shipment in advance through our booking system and then drop the goods off at our cargo terminal.
+From that moment, the shipment waits until a flight can take it. On busy weeks, some cargo can sit in our hangar for
+days before a flight finally picks it up. The booking system keeps a record of every shipment. The planners tell me the
+records are generally good, although no system is perfect.
+
+A few hours before each departure, one of our cargo planners reviews everything waiting for that flight and prepares a
+loading proposal. On quiet days everything fits and the job is easy. On busy days, which are becoming more common, there
+is more cargo waiting than the aircraft can carry, and the planner has to decide which cargo goes on this flight. Once
+the proposal is approved, the ground team uses it to prepare the cargo and load the aircraft.
+
+Today, planners build these proposals from the booking information, a spreadsheet and years of experience. Our most
+experienced planners are very good at it, but it takes time, and two planners looking at the same flight do not always
+reach the same answer. When a new planner joins, it takes months before they feel confident. And mistakes matter: a poor
+plan can cost us money, and some mistakes are far more serious than that.
+
+Our shipments are not all alike, and neither are our customers. Some customers are more important to us than others,
+whether because of the business they bring, how long they have been with us, or what they ship, and our planners know
+who they are. I have heard that the planners would like a tool that picks the best shipments for each flight, and that
+sounds right to me. The tool should help us make good use of every aircraft and always respect our operating limits. It
+should not replace the planner. Planners know things a computer does not, so they must be able to review the proposal
+and make the final call.
+
+We know a tool like this could eventually do many things. For now, we would like to start with something simple that
+works, and improve it from there.
+
+I am not a planner myself, so I may have missed important details. Please talk to the planner directly to find out what
+they really need.
