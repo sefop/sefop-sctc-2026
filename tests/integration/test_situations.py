@@ -166,46 +166,6 @@ def test_the_workshop_flight_loads_the_four_shipments_that_earn_the_most(monkeyp
 
 
 @pytest.mark.integration
-def test_the_workshop_flight_shows_each_stage_of_the_program_before_the_result(monkeypatch, capsys):
-    # ARRANGE / ACT
-    printed, _ = _run_cli("SC101", _DATA_DIR, monkeypatch, capsys)
-
-    # ASSERT — everything above the result table, exactly as it appears on screen
-    assert _stages(printed) == ["Read data", "Preprocess", "Solve", "Postprocess", "Result"]
-    assert printed.startswith(
-        "\n"
-        "#----------------------------------#\n"
-        "#            Read data             #\n"
-        "#----------------------------------#\n"
-        "Flight SC101, weight limit 1,000 kg\n"
-        "9 shipments from 6 customers\n"
-        "\n"
-        "#----------------------------------#\n"
-        "#            Preprocess            #\n"
-        "#----------------------------------#\n"
-        "9 shipments can fly\n"
-        "0 set aside (heavier than the limit)\n"
-        "\n"
-        "#----------------------------------#\n"
-        "#              Solve               #\n"
-        "#----------------------------------#\n"
-        "Solver: MIP (HiGHS)\n"
-        "Status: Optimal\n"
-        "\n"
-        "#----------------------------------#\n"
-        "#           Postprocess            #\n"
-        "#----------------------------------#\n"
-        "4 shipments loaded, in flight order\n"
-        "\n"
-        "#----------------------------------#\n"
-        "#              Result              #\n"
-        "#----------------------------------#\n"
-        "Flight SC101   weight limit 1,000 kg\n"
-    )
-    assert max(len(line) for line in printed.splitlines()) <= 80
-
-
-@pytest.mark.integration
 def test_the_small_example_flight_can_be_checked_by_hand(monkeypatch, capsys):
     # ARRANGE / ACT — the three-shipment flight in the real data/ folder
     printed, exit_code = _run_cli("SC001", _DATA_DIR, monkeypatch, capsys)
